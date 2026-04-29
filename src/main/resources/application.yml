@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: traffic-lab
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/traffic_lab?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: traffic
+    password: traffic
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 1000
+        order_inserts: true
+    open-in-view: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
