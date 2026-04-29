@@ -11,6 +11,9 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+    command:
+      - --innodb-buffer-pool-size=256M
+      - --max-connections=200
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
       interval: 10s
