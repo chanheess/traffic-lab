@@ -2,8 +2,11 @@ package com.trafficlab.post;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
@@ -24,12 +27,13 @@ public class PostService {
             return;
         }
 
+        Random random = new Random();
         List<Post> posts = new ArrayList<>(BATCH_SIZE);
         for (int i = 0; i < SEED_COUNT; i++) {
-            // UUID prefix로 각 제목이 고유 → 키워드 검색 시 소수 행만 히트
             posts.add(Post.builder()
                     .title(UUID.randomUUID() + " 게시글 내용")
                     .content("내용 " + i)
+                    .viewCount(random.nextLong(1_000_000))
                     .build());
 
             if (posts.size() >= BATCH_SIZE) {
@@ -40,6 +44,19 @@ public class PostService {
         if (!posts.isEmpty()) {
             saveAndClear(posts);
         }
+    }
+
+    public List<Post> getPopularPosts() {
+        return postRepository.findTop10ByOrderByViewCountDesc();
+    }
+
+    @Cacheable(value = "popularPosts", key = "'top10'")
+    public List<Post> getPopularPostsCached() {
+        return postRepository.findTop10ByOrderByViewCountDesc();
+    }
+
+    @CacheEvict(value = "popularPosts", allEntries = true)
+    public void evictPopularPostsCache() {
     }
 
     private void saveAndClear(List<Post> posts) {
