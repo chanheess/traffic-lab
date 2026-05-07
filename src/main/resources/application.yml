@@ -7,6 +7,10 @@ spring:
     username: traffic
     password: traffic
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 1
+      connection-timeout: 30000
 
   data:
     redis:
